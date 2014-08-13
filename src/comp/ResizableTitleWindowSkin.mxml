@@ -30,7 +30,7 @@
         /** 
          * @copy spark.skins.spark.ApplicationSkin#hostComponent
          */
-        [HostComponent("com.emc.vsi.flexui.views.appsync.ResizableTitleWindow")]
+        [HostComponent("comp.ResizableTitleWindow")]
         ]]>
     </fx:Metadata> 
     

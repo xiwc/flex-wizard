@@ -16,18 +16,6 @@
 			
 			protected function application1_creationCompleteHandler(event:FlexEvent):void
 			{
-				trace(null is ArrayCollection);
-				trace(undefined is ArrayCollection);
-				
-				var txt:String = txtInput.text;
-				
-				trace(txt);
-				
-				if(null){
-					trace('null');
-				}else{
-					trace('else null');
-				}
 			}
 			
 			protected function button1_clickHandler(event:MouseEvent):void
@@ -62,11 +50,5 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 	</s:layout>
-	<s:Group width="200" height="200" contentBackgroundColor="#770E0E">
-	</s:Group>
-	<s:BorderContainer width="200" backgroundColor="#CA0D0D" borderVisible="false" borderWeight="0"
-					   cornerRadius="5">
-	</s:BorderContainer>
-	<s:TextInput id="txtInput"/>
-	<s:Button click="button1_clickHandler(event)"/>
+	<s:Button label="Show Wizard Demo" click="button1_clickHandler(event)"/>
 </s:Application>

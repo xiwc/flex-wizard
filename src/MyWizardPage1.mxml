@@ -10,6 +10,30 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			override protected function callbackForNext():void{
+				// override by sub-class.
+				trace("wizardpage callback for next event");
+				this.isValid = true;
+			}
+			
+			override protected function callbackForBack():void{
+				// override by sub-class.
+				trace("wizardpage callback for back event");
+			}
+			
+			override protected function callbackForNavLabelClick():void{
+				// override by sub-class.
+				trace("wizardpage callback for nav label click event");
+			}
+			
+			override protected function initWizardPage():void{
+				// override by sub-class.
+				trace("init wizardpage");
+			}
+		]]>
+	</fx:Script>
 	<s:Form x="115" y="159" width="100%">
 		<s:FormHeading label="Page1"/>
 		<s:FormItem label="Name:" required="true">

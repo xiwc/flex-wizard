@@ -6,9 +6,11 @@ package comp
 	{
 		public static const FINISH:String = "finish";
 		public static const BACK:String = "back";
+		public static const BACK_VALID:String = "backValid";
 		public static const NEXT:String = "next";
 		public static const NEXT_VALID:String = "nextValid";
 		public static const CANCEL:String = "cancel";
+		public static const NAV_LABEL_CLICK:String = "navLabelClick";
 		
 		private var _data:Object = {};
 		

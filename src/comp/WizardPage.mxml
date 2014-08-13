@@ -11,9 +11,9 @@
 		<![CDATA[
 			import mx.events.FlexEvent;
 			
-			private var isValid:Boolean;
+			protected var isValid:Boolean;
 			
-			private var error:Array = new Array();
+			protected var error:Array = new Array();
 			
 			public var navLabel:Object;
 			
@@ -23,8 +23,24 @@
 				this.isValid = true;
 			}
 			
+			protected function callbackForBack():void{
+				// override by sub-class.
+				trace("wizardpage callback for back event");
+			}
+			
+			protected function callbackForNavLabelClick():void{
+				// override by sub-class.
+				trace("wizardpage callback for nav label click event");
+			}
+			
+			protected function initWizardPage():void{
+				// override by sub-class.
+				trace("init wizardpage");
+			}
+			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
+				//Alert.show('wizard creationCompleteHandler');
 				this.addEventListener(WizardEvent.NEXT, function(evt:WizardEvent):void{
 					
 					callbackForNext();
@@ -38,6 +54,28 @@
 					
 					dispatchEvent(wizardEvent);
 				});
+				
+				this.addEventListener(WizardEvent.BACK, function(evt:WizardEvent):void{
+					
+					callbackForBack();
+					
+					var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.BACK_VALID);
+					wizardEvent.data.isValid = isValid;
+					
+					if(!isValid){
+						wizardEvent.data.error = error;
+					}
+					
+					dispatchEvent(wizardEvent);
+				});
+				
+				this.addEventListener(WizardEvent.NAV_LABEL_CLICK, function(evt:WizardEvent):void{
+					
+					callbackForNavLabelClick();
+				});
+				
+				
+				initWizardPage();
 			}
 			
 		]]>

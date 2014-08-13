@@ -55,9 +55,9 @@
 				
 				for each(var wizardPage:WizardPage in _wizardPages){
 					var navObj:Object = wizardPage.navLabel;
-					navObj.index = this.wizardPages.length + 1;
+					navObj.index = wizardPages.length + 1;
 					
-					if(this.wizardPages.length == 0){
+					if(wizardPages.length == 0){
 						navObj.selected = true;
 						navObj.checked = true;
 					}else{
@@ -66,14 +66,11 @@
 					}
 					
 					wizardPage.addEventListener(WizardEvent.NEXT_VALID, nextHandler);
+					wizardPage.addEventListener(WizardEvent.BACK_VALID, backHandler);
 					
-					this.wizardPages.push(wizardPage);
+					wizardPages.push(wizardPage);
 					
 				}
-			}
-			
-			protected function callbackForFinish():void{
-				// override by sub-class.
 			}
 			
 			protected function btnFinish_clickHandler(event:MouseEvent):void
@@ -86,14 +83,47 @@
 				callbackForFinish();
 			}
 			
+			protected function callbackForFinish():void{
+				// override by sub-class.
+			}
+			
 			protected function callbackForNext():void{
 				// override by sub-class.
+			}
+			
+			protected function callbackForBack():void{
+				// override by sub-class.
+			}
+			
+			private function backHandler(evt:WizardEvent):void{
+				var wizardPage:WizardPage = pageContainer.removeElementAt(0) as WizardPage;
+				var index:int = wizardPages.indexOf(wizardPage);
+				
+				if(index > 0){
+					var backWizardPage:WizardPage = wizardPages[index - 1];
+					backWizardPage.navLabel.selected = true;
+					backWizardPage.navLabel.checked = true;
+					
+					wizardPage.navLabel.selected = false;
+					
+					pageContainer.addElement(backWizardPage);
+					
+					ArrayCollection(this.listItem.dataProvider).refresh();
+					
+					if(index == wizardPages.length - 1){
+						btnFinish.enabled = false;
+						btnNext.enabled = true;
+					}
+					
+					if(index == 1){
+						btnBack.enabled = false;
+					}
+				}
 			}
 			
 			private function nextHandler(evt:WizardEvent):void{
 				
 				if(evt.data.isValid){
-					// TODO change to next wizardpage.
 					var wizardPage:WizardPage = pageContainer.removeElementAt(0) as WizardPage;
 					var index:int = wizardPages.indexOf(wizardPage);
 					
@@ -114,7 +144,7 @@
 							btnNext.enabled = false;
 						}
 						
-						if(index >= 0){
+						if(index == 0){
 							btnBack.enabled = true;
 						}
 					}
@@ -155,6 +185,61 @@
 					
 					ArrayCollection(listItem.dataProvider).refresh();
 				}
+				
+				this.addEventListener(WizardEvent.NAV_LABEL_CLICK,function(evt:WizardEvent):void{
+					
+					var dataProvider:ArrayCollection = listItem.dataProvider as ArrayCollection;
+					
+					for each(var item:Object in dataProvider){
+						if(item !== evt.data && item.selected){
+							item.selected = false;
+							break;
+						}
+					}
+					
+					dataProvider.refresh();
+					
+					for each(var wizardPage:WizardPage in wizardPages){
+						if(wizardPage.navLabel.selected){
+							pageContainer.removeElementAt(0);
+							pageContainer.addElement(wizardPage);
+							
+							var index:int = wizardPages.indexOf(wizardPage);
+							
+							if(index == 0){
+								btnBack.enabled = false;
+								btnNext.enabled = true;
+								btnFinish.enabled = false;
+							}else if(index == wizardPages.length - 1){
+								btnBack.enabled = true;
+								btnNext.enabled = false;
+								btnFinish.enabled = true;
+							}else{
+								btnBack.enabled = true;
+								btnNext.enabled = true;
+								btnFinish.enabled = false;
+							}
+							
+							wizardPage.dispatchEvent(evt);
+						}
+					}
+				});
+			}
+			
+			protected function btnBack_clickHandler(event:MouseEvent):void
+			{
+				var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.BACK);
+				wizardEvent.data = {};
+				
+				for each(var wizardPage:WizardPage in wizardPages){
+					if(wizardPage.navLabel.selected){
+						wizardPage.dispatchEvent(wizardEvent);
+					}
+				}
+				
+				dispatchEvent(wizardEvent);
+				
+				callbackForBack();
 			}
 			
 		]]>
@@ -164,7 +249,7 @@
 	</fx:Declarations>
 	<comp:controlBarContent>
 		<s:Spacer width="100%"/>
-		<s:Button id="btnBack" label="Back" enabled="false"/>
+		<s:Button id="btnBack" label="Back" click="btnBack_clickHandler(event)" enabled="false"/>
 		<s:Button id="btnNext" label="Next" click="btnNext_clickHandler(event)"/>
 		<s:Button id="btnFinish" label="Finish" click="btnFinish_clickHandler(event)" enabled="false"/>
 		<s:Button id="btnCancel" label="Cancel" click="btnCancel_clickHandler(event)"/>

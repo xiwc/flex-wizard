@@ -2,12 +2,14 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
-				autoDrawBackground="true">
+				autoDrawBackground="true"
+				creationComplete="itemrenderer_creationCompleteHandler(event)">
 	
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.collections.IList;
+			import mx.events.FlexEvent;
 			
 			[Bindable]
 			private var _data:Object;
@@ -17,6 +19,8 @@
 			
 			[Bindable]
 			private var fontColor:uint = 0x573333;
+			
+			private var wizardWin:WizardWindow;
 			
 			
 			override public function set data(value:Object):void{
@@ -51,19 +55,15 @@
 			{
 				data.selected = true;
 				
-				var wizardWin:WizardWindow = this['outerDocument'] as WizardWindow;
+				var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.NAV_LABEL_CLICK);
+				wizardEvent.data = data;
 				
-				var dataProvider:ArrayCollection = wizardWin.listItem.dataProvider as ArrayCollection;
-				
-				for each(var item:Object in dataProvider){
-					if(item !== data){
-						item.selected = false;
-						break;
-					}
-				}
-				
-				dataProvider.refresh();
-				
+				this.wizardWin.dispatchEvent(wizardEvent);
+			}
+			
+			protected function itemrenderer_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.wizardWin = this['outerDocument'] as WizardWindow;
 			}
 			
 		]]>
