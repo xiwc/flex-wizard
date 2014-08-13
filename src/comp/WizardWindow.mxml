@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:comp="comp.*"
+			   width="100%" height="100%" close="wizardWindow_closeHandler(event)"
+			   creationComplete="creationCompleteHandler(event)">
+	
+	<fx:Metadata>
+		[Event(name="finish", type="comp.WizardEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.skins.halo.WindowBackground;
+			
+			private var _context:Object;
+			
+			private var wizardPages:Array = new Array();
+			
+			[Bindable]
+			private var navModel:ArrayCollection = new ArrayCollection();
+			
+			public function get context():Object
+			{
+				return _context;
+			}
+
+			public function set context(value:Object):void
+			{
+				_context = value;
+			}
+
+			protected function wizardWindow_closeHandler(event:CloseEvent):void
+			{
+				close();
+			}
+			
+			protected function btnCancel_clickHandler(event:MouseEvent):void
+			{
+				close();
+			}
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			public function addWizardPages(_wizardPages:Array):void{
+				
+				for each(var wizardPage:WizardPage in _wizardPages){
+					var navObj:Object = wizardPage.navLabel;
+					navObj.index = this.wizardPages.length + 1;
+					
+					if(this.wizardPages.length == 0){
+						navObj.selected = true;
+						navObj.checked = true;
+					}else{
+						navObj.selected = false;
+						navObj.checked = false;
+					}
+					
+					wizardPage.addEventListener(WizardEvent.NEXT_VALID, nextHandler);
+					
+					this.wizardPages.push(wizardPage);
+					
+				}
+			}
+			
+			protected function callbackForFinish():void{
+				// override by sub-class.
+			}
+			
+			protected function btnFinish_clickHandler(event:MouseEvent):void
+			{
+				var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.FINISH);
+				// TODO set finish data
+				wizardEvent.data = {};
+				dispatchEvent(wizardEvent);
+				
+				callbackForFinish();
+			}
+			
+			protected function callbackForNext():void{
+				// override by sub-class.
+			}
+			
+			private function nextHandler(evt:WizardEvent):void{
+				
+				if(evt.data.isValid){
+					// TODO change to next wizardpage.
+					var wizardPage:WizardPage = pageContainer.removeElementAt(0) as WizardPage;
+					var index:int = wizardPages.indexOf(wizardPage);
+					
+					if(index < wizardPages.length - 1){
+						
+						var nextWizardPage:WizardPage = wizardPages[index + 1];
+						nextWizardPage.navLabel.selected = true;
+						nextWizardPage.navLabel.checked = true;
+						
+						wizardPage.navLabel.selected = false;
+						
+						pageContainer.addElement(nextWizardPage);
+						
+						ArrayCollection(this.listItem.dataProvider).refresh();
+						
+						if(index == wizardPages.length - 2){
+							btnFinish.enabled = true;
+							btnNext.enabled = false;
+						}
+						
+						if(index >= 0){
+							btnBack.enabled = true;
+						}
+					}
+				}else{
+					// TODO show error message.
+					var msgArr:Array = evt.data.error;
+					Alert.show(msgArr.join("\n"));
+				}
+			}
+			
+			
+			protected function btnNext_clickHandler(event:MouseEvent):void
+			{
+				var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.NEXT);
+				wizardEvent.data = {};
+				
+				for each(var wizardPage:WizardPage in wizardPages){
+					if(wizardPage.navLabel.selected){
+						wizardPage.dispatchEvent(wizardEvent);
+					}
+				}
+				
+				dispatchEvent(wizardEvent);
+				
+				callbackForNext();
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				if(wizardPages.length > 0){
+					pageContainer.addElement(wizardPages[0]);
+					
+					for each(var wizardPage:WizardPage in wizardPages){
+						ArrayCollection(listItem.dataProvider).addItem(wizardPage.navLabel);
+					}
+					
+					ArrayCollection(listItem.dataProvider).refresh();
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	<s:controlBarContent>
+		<s:Spacer width="100%"/>
+		<s:Button id="btnBack" label="Back" enabled="false"/>
+		<s:Button id="btnNext" label="Next" click="btnNext_clickHandler(event)"/>
+		<s:Button id="btnFinish" label="Finish" click="btnFinish_clickHandler(event)" enabled="false"/>
+		<s:Button id="btnCancel" label="Cancel" click="btnCancel_clickHandler(event)"/>
+	</s:controlBarContent>
+	
+	<s:HGroup width="100%" height="100%" contentBackgroundColor="#EFEFEF" gap="0">
+		<s:BorderContainer width="200" height="100%" borderVisible="false"
+						   contentBackgroundColor="#EFEFEF">
+			<s:List id="listItem" width="100%" height="100%" borderVisible="false"
+					contentBackgroundColor="#EFEFEF" dataProvider="{navModel}"
+					rollOverColor="#EFEFEF" selectionColor="#EFEFEF">
+				<s:itemRenderer>
+					<fx:Component>
+						<comp:WizardNavItem/>
+					</fx:Component>
+				</s:itemRenderer>
+			</s:List>
+		</s:BorderContainer>
+		<s:BorderContainer id="pageContainer" width="100%" height="100%" borderVisible="false">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+		</s:BorderContainer>
+	</s:HGroup>
+</s:TitleWindow>

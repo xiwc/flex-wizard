@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<comp:WizardPage xmlns:fx="http://ns.adobe.com/mxml/2009"
+				 xmlns:s="library://ns.adobe.com/flex/spark"
+				 xmlns:mx="library://ns.adobe.com/flex/mx"
+				 xmlns:comp="comp.*"
+				 width="100%" height="100%">
+	<comp:layout>
+		<s:VerticalLayout/>
+	</comp:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Form x="115" y="159" width="100%">
+		<s:FormHeading label="Page1"/>
+		<s:FormItem label="Name:" required="true">
+			<s:TextInput/>
+		</s:FormItem>
+		<s:FormItem label="Age:">
+			<s:TextInput/>
+		</s:FormItem>
+	</s:Form>
+</comp:WizardPage>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   minWidth="955" minHeight="600">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			private var model:ArrayCollection = new ArrayCollection([
+				{isSelected:true, id:1, name:'xiweicheng1', age:28},
+				{isSelected:false, id:2, name:'xiweicheng2', age:28},
+				{isSelected:true, id:3, name:'xiweicheng3', age:28}
+			]);
+			
+			protected function adgSubscribedPlans_changeHandler(event:ListEvent):void
+			{
+				var selectedItems:Array = adgSubscribedPlans.selectedItems;
+				
+				var model:ArrayCollection = adgSubscribedPlans.dataProvider as ArrayCollection;
+				
+				for each(var obj:Object in model){
+					
+					if(selectedItems.indexOf(obj) != -1){
+						obj.isSelected = true;
+					}else{
+						obj.isSelected = false;
+					}
+				}
+				
+				ListCollectionView(adgSubscribedPlans.dataProvider).refresh();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:AdvancedDataGrid id="adgSubscribedPlans" x="148" y="31" allowMultipleSelection="true"
+						 change="adgSubscribedPlans_changeHandler(event)" dataProvider="{model}"
+						 selectionMode="multipleRows">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn width="40">
+				<mx:headerRenderer>
+					<fx:Component>
+						<mx:HBox width="100%" height="100%" horizontalAlign="center" paddingLeft="-4"
+								 verticalAlign="middle">
+							
+							<fx:Script>
+								<![CDATA[
+									import mx.collections.ArrayCollection;
+									import mx.collections.ListCollectionView;
+									protected function checkbox_changeHandler(event:Event):void
+									{
+										var chk:mx.controls.CheckBox = event.target as mx.controls.CheckBox;
+										
+										var model:ArrayCollection = outerDocument.adgSubscribedPlans.dataProvider as ArrayCollection;
+										
+										for each(var obj:Object in model){
+											obj.isSelected = chk.selected;
+										}
+										
+										if(chk.selected){
+											outerDocument.adgSubscribedPlans.selectedItems = model.toArray();
+										}else{
+											outerDocument.adgSubscribedPlans.selectedItems = [];
+										}
+										
+										// refresh the ui binding.
+										ListCollectionView(outerDocument.adgSubscribedPlans.dataProvider).refresh();
+									}
+								]]>
+							</fx:Script>
+							
+							<mx:CheckBox change="checkbox_changeHandler(event)"/>
+						</mx:HBox>
+					</fx:Component>
+				</mx:headerRenderer>
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer>
+							<s:HGroup width="100%" height="100%" horizontalAlign="center"
+									  verticalAlign="middle">
+								<s:CheckBox enabled="false" selected="{data.isSelected}"/>
+							</s:HGroup>
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Name"/>
+			<mx:AdvancedDataGridColumn dataField="age" headerText="Age"/>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	<mx:AdvancedDataGrid id="adg1" x="147" y="236" width="544" allowMultipleSelection="true"
+						 dataProvider="{model}" designViewDataType="tree"
+						 selectionMode="multipleRows">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Column 1"/>
+			<mx:AdvancedDataGridColumn dataField="age" headerText="Column 2"/>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+</s:Application>
