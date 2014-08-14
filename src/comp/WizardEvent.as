@@ -28,6 +28,13 @@ package comp
 		{
 			_data = value;
 		}
-
+		
+		override public function clone():Event {
+			
+			var wizardEvent:WizardEvent = new WizardEvent(type, bubbles, cancelable);
+			wizardEvent._data = _data;
+			
+			return wizardEvent;
+		}
 	}
 }

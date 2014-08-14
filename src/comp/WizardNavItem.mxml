@@ -7,8 +7,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.collections.IList;
 			import mx.events.FlexEvent;
 			
 			[Bindable]
@@ -53,6 +51,8 @@
 			
 			protected function hgroup1_clickHandler(event:MouseEvent):void
 			{
+				event.stopImmediatePropagation();
+				
 				data.selected = true;
 				
 				var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.NAV_LABEL_CLICK);
