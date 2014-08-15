@@ -13,7 +13,6 @@
 			import mx.controls.Alert;
 			
 			override protected function callbackForFinish():void{
-				Alert.show("wizard finish callback");
 				trace("wizard finish callback");
 			}
 		]]>

@@ -32,7 +32,6 @@
 				myWizard.addWizardPages([myWizardPage1, myWizardPage2, myWizardPage3]);
 				
 				myWizard.addEventListener(WizardEvent.FINISH, function(evt:WizardEvent):void{
-					Alert.show("wizard finish event");
 					trace("wizard finish event");
 				});
 				

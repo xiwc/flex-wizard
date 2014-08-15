@@ -18,22 +18,16 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
-			private var _context:Object;
+			import spark.events.ElementExistenceEvent;
 			
+			// accept outer params as this object's property.
+			public const context:Object = new Object();
+			
+			// store wizard pages.
 			private var wizardPages:Array = new Array();
 			
 			[Bindable]
 			private var navModel:ArrayCollection = new ArrayCollection();
-			
-			public function get context():Object
-			{
-				return _context;
-			}
-
-			public function set context(value:Object):void
-			{
-				_context = value;
-			}
 
 			protected function wizardWindow_closeHandler(event:CloseEvent):void
 			{
@@ -42,7 +36,7 @@
 			
 			protected function btnCancel_clickHandler(event:MouseEvent):void
 			{
-				close();
+				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 			
 			private function close():void
@@ -53,6 +47,9 @@
 			public function addWizardPages(_wizardPages:Array):void{
 				
 				for each(var wizardPage:WizardPage in _wizardPages){
+					
+					wizardPage.context = context;
+					
 					var navObj:Object = wizardPage.navLabel;
 					navObj.index = wizardPages.length + 1;
 					
@@ -175,6 +172,15 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				this.setStyle("skinClass", ResizableTitleWindowSkin);
+				
+				this.pageContainer.addEventListener(ElementExistenceEvent.ELEMENT_ADD, function():void{
+					var wizardPage:WizardPage = pageContainer.getElementAt(0) as WizardPage;
+					
+					if(wizardPage != null){
+						var wizardEvent:WizardEvent = new WizardEvent(WizardEvent.PAGE_ADD);
+						wizardPage.dispatchEvent(wizardEvent);
+					}
+				});
 				
 				if(wizardPages.length > 0){
 					pageContainer.addElement(wizardPages[0]);

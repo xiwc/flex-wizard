@@ -11,6 +11,7 @@ package comp
 		public static const NEXT_VALID:String = "nextValid";
 		public static const CANCEL:String = "cancel";
 		public static const NAV_LABEL_CLICK:String = "navLabelClick";
+		public static const PAGE_ADD:String = "pageAdd";
 		
 		private var _data:Object = {};
 		

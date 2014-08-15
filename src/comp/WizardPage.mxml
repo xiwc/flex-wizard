@@ -17,6 +17,20 @@
 			
 			public var navLabel:Object;
 			
+			[Bindable]
+			protected var _context:Object;
+			
+			[Bindable]
+			public function get context():Object
+			{
+				return _context;
+			}
+
+			public function set context(value:Object):void
+			{
+				_context = value;
+			}
+
 			protected function callbackForNext():void{
 				// override by sub-class.
 				trace("wizardpage callback for next event");
@@ -36,6 +50,21 @@
 			protected function initWizardPage():void{
 				// override by sub-class.
 				trace("init wizardpage");
+			}
+			
+			protected function callbackForPageAdd():void{
+				// override by sub-class.
+				trace("wizardpage callback for add to container");
+			}
+			
+			override protected function resourcesChanged():void{
+				
+				if(!this.hasEventListener(WizardEvent.PAGE_ADD)){
+					this.addEventListener(WizardEvent.PAGE_ADD, function(evt:WizardEvent):void{
+						
+						callbackForPageAdd();
+					});
+				}
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
@@ -73,7 +102,6 @@
 					
 					callbackForNavLabelClick();
 				});
-				
 				
 				initWizardPage();
 			}
